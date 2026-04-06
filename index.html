@@ -904,7 +904,51 @@
     <footer class="footer" id="contact">
         <p class="footer-text">© 2026 科技用之于民. CRAFTED WITH PASSION.</p>
     </footer>
-    
+    <script>
+// 1. 主题初始化：优先使用 localStorage，否则跟随系统
+(function() {
+    const html = document.documentElement;
+    const githubIcon = document.getElementById('githubIcon');
+    function applyTheme(theme) {
+        if (theme === "light") {
+            html.setAttribute("data-theme", "light");
+            if(githubIcon) githubIcon.style.filter = "none";
+        } else {
+            html.removeAttribute("data-theme");
+            if(githubIcon) githubIcon.style.filter = "invert(1)";
+        }
+    }
+    let theme = localStorage.getItem('theme');
+    if (!theme) {
+        // 跟随操作系统主题
+        theme = window.matchMedia('(prefers-color-scheme: light)').matches ? "light" : "dark";
+    }
+    applyTheme(theme);
+    // 响应系统主题切换（如果没有本地选择时）
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+        if (!localStorage.getItem('theme')) {
+            applyTheme(e.matches ? "light" : "dark");
+        }
+    });
+})();
+
+// 2. 切换主题并保存
+function toggleTheme() {
+    const html = document.documentElement;
+    let theme;
+    if (html.getAttribute('data-theme') === 'light') {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'dark');
+        const githubIcon = document.getElementById('githubIcon');
+        if (githubIcon) githubIcon.style.filter = 'invert(1)';
+    } else {
+        html.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+        const githubIcon = document.getElementById('githubIcon');
+        if (githubIcon) githubIcon.style.filter = 'none';
+    }
+}
+</script>
     <script>
         // Generate Stars
         function generateStars() {
