@@ -3,13 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>First Site | 首秀</title>
+    <title>科技用之于民 | Tech for the People</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --cursor-size: 20px;
             --cursor-hover-size: 60px;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-glow: rgba(120, 119, 198, 0.15);
+            --star-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #f5f5f0;
+            --bg-secondary: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --accent-glow: rgba(255, 193, 7, 0.15);
+            --star-color: rgba(0, 0, 0, 0);
         }
         
         * {
@@ -20,10 +37,11 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: #0a0a0a;
-            color: #ffffff;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             overflow-x: hidden;
             cursor: none;
+            transition: background-color 0.8s ease, color 0.8s ease;
         }
         
         .font-display {
@@ -34,19 +52,19 @@
         .cursor {
             width: var(--cursor-size);
             height: var(--cursor-size);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--text-primary);
             border-radius: 50%;
             position: fixed;
             pointer-events: none;
             z-index: 9999;
-            transition: width 0.3s, height 0.3s, background 0.3s;
+            transition: width 0.3s, height 0.3s, background 0.3s, border-color 0.8s;
             mix-blend-mode: difference;
         }
         
         .cursor.hover {
             width: var(--cursor-hover-size);
             height: var(--cursor-hover-size);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(128, 128, 128, 0.1);
         }
         
         /* Grain Overlay */
@@ -60,6 +78,218 @@
             z-index: 9998;
             opacity: 0.03;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            transition: opacity 0.8s;
+        }
+        
+        [data-theme="light"] .grain {
+            opacity: 0.02;
+        }
+        
+        /* Stars */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 1;
+            transition: opacity 0.8s;
+        }
+        
+        [data-theme="light"] .stars-container {
+            opacity: 0;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--star-color);
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+            box-shadow: 0 0 4px var(--star-color);
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+        
+        /* Day Mode Elements - Sun & Clouds */
+        .day-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.8s;
+        }
+        
+        [data-theme="light"] .day-elements {
+            opacity: 1;
+        }
+        
+        .sun {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ffd700 0%, #ffa500 70%, transparent 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 165, 0, 0.3);
+            animation: sunPulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes sunPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 165, 0, 0.3); }
+            50% { transform: scale(1.1); box-shadow: 0 0 80px rgba(255, 215, 0, 0.6), 0 0 120px rgba(255, 165, 0, 0.4); }
+        }
+        
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 100px;
+            opacity: 0.9;
+            animation: float 20s infinite ease-in-out;
+            filter: blur(1px);
+        }
+        
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 100px;
+        }
+        
+        .cloud:nth-child(2) {
+            width: 100px;
+            height: 40px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .cloud:nth-child(2)::before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 10px;
+        }
+        
+        .cloud:nth-child(2)::after {
+            width: 60px;
+            height: 40px;
+            top: -15px;
+            right: 10px;
+        }
+        
+        .cloud:nth-child(3) {
+            width: 80px;
+            height: 35px;
+            top: 40%;
+            right: 20%;
+            animation-delay: -5s;
+        }
+        
+        .cloud:nth-child(3)::before {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            left: 15px;
+        }
+        
+        .cloud:nth-child(3)::after {
+            width: 50px;
+            height: 35px;
+            top: -10px;
+            right: 15px;
+        }
+        
+        .cloud:nth-child(4) {
+            width: 120px;
+            height: 45px;
+            top: 60%;
+            left: 30%;
+            animation-delay: -10s;
+        }
+        
+        .cloud:nth-child(4)::before {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            left: 20px;
+        }
+        
+        .cloud:nth-child(4)::after {
+            width: 70px;
+            height: 45px;
+            top: -20px;
+            right: 20px;
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 6rem;
+            z-index: 100;
+            width: 60px;
+            height: 32px;
+            background: var(--border-color);
+            border-radius: 16px;
+            cursor: pointer;
+            padding: 4px;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.8s;
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .toggle-slider {
+            width: 24px;
+            height: 24px;
+            background: var(--text-primary);
+            border-radius: 50%;
+            position: relative;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.8s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        [data-theme="light"] .toggle-slider {
+            transform: translateX(28px);
+        }
+        
+        .toggle-icon {
+            position: absolute;
+            transition: opacity 0.3s;
+        }
+        
+        .moon-icon {
+            opacity: 1;
+        }
+        
+        .sun-icon {
+            opacity: 0;
+        }
+        
+        [data-theme="light"] .moon-icon {
+            opacity: 0;
+        }
+        
+        [data-theme="light"] .sun-icon {
+            opacity: 1;
         }
         
         /* Hero Section */
@@ -77,8 +307,9 @@
             position: absolute;
             width: 150%;
             height: 150%;
-            background: radial-gradient(circle at 50% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%);
+            background: radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 50%);
             animation: pulse 8s ease-in-out infinite;
+            transition: background 0.8s;
         }
         
         @keyframes pulse {
@@ -94,9 +325,9 @@
         }
         
         .main-title {
-            font-size: clamp(3rem, 10vw, 8rem);
+            font-size: clamp(2.5rem, 8vw, 6rem);
             font-weight: 700;
-            line-height: 1;
+            line-height: 1.2;
             letter-spacing: -0.02em;
             position: relative;
             display: inline-block;
@@ -127,10 +358,6 @@
         .main-title .char:nth-child(4) { animation-delay: 0.25s; }
         .main-title .char:nth-child(5) { animation-delay: 0.3s; }
         .main-title .char:nth-child(6) { animation-delay: 0.35s; }
-        .main-title .char:nth-child(7) { animation-delay: 0.4s; }
-        .main-title .char:nth-child(8) { animation-delay: 0.45s; }
-        .main-title .char:nth-child(9) { animation-delay: 0.5s; }
-        .main-title .char:nth-child(10) { animation-delay: 0.55s; }
         
         @keyframes wave {
             0%, 100% { transform: translateY(0); }
@@ -145,7 +372,8 @@
             margin-top: 2rem;
             opacity: 0;
             animation: fadeIn 1s ease 0.8s forwards;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-secondary);
+            transition: color 0.8s;
         }
         
         @keyframes fadeIn {
@@ -163,9 +391,10 @@
         
         .shape {
             position: absolute;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
             border-radius: 50%;
             animation: float 20s infinite ease-in-out;
+            transition: border-color 0.8s;
         }
         
         .shape:nth-child(1) {
@@ -215,8 +444,10 @@
         .logo {
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             letter-spacing: -0.05em;
+            max-width: 200px;
+            line-height: 1.2;
         }
         
         .menu-trigger {
@@ -238,8 +469,8 @@
         .menu-trigger span {
             width: 24px;
             height: 1px;
-            background: white;
-            transition: all 0.3s;
+            background: var(--text-primary);
+            transition: all 0.3s, background 0.8s;
         }
         
         .menu-trigger.active span:nth-child(1) {
@@ -261,7 +492,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #0a0a0a;
+            background: var(--bg-primary);
             z-index: 99;
             display: flex;
             flex-direction: column;
@@ -269,7 +500,7 @@
             align-items: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.5s ease, background 0.8s;
         }
         
         .fullscreen-menu.active {
@@ -284,11 +515,11 @@
             margin: 1rem 0;
             opacity: 0;
             transform: translateY(50px);
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.8s;
             cursor: pointer;
             position: relative;
             text-decoration: none;
-            color: white;
+            color: var(--text-primary);
         }
         
         .fullscreen-menu.active .menu-item {
@@ -307,8 +538,8 @@
             left: 0;
             width: 0;
             height: 2px;
-            background: white;
-            transition: width 0.3s ease;
+            background: var(--text-primary);
+            transition: width 0.3s ease, background 0.8s;
         }
         
         .menu-item:hover::after {
@@ -337,6 +568,8 @@
             margin-bottom: 3rem;
             position: relative;
             display: inline-block;
+            color: var(--text-primary);
+            transition: color 0.8s;
         }
         
         .section-title::before {
@@ -346,15 +579,17 @@
             top: 50%;
             width: 1rem;
             height: 1px;
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--text-secondary);
+            transition: background 0.8s;
         }
         
         /* Interactive Text */
         .interactive-text {
             font-size: 1.5rem;
             line-height: 2;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-secondary);
             max-width: 800px;
+            transition: color 0.8s;
         }
         
         .interactive-text .word {
@@ -364,14 +599,15 @@
         }
         
         .interactive-text .word:hover {
-            color: #ffffff;
+            color: var(--text-primary);
             transform: scale(1.1);
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            text-shadow: 0 0 20px var(--accent-glow);
         }
         
         /* Links Section */
         .links-section {
-            background: linear-gradient(to bottom, #0a0a0a, #111);
+            background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
+            transition: background 0.8s;
         }
         
         .links-grid {
@@ -382,14 +618,15 @@
         }
         
         .link-card {
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
             padding: 3rem;
             position: relative;
             overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.8s, background 0.8s;
             text-decoration: none;
-            color: white;
+            color: var(--text-primary);
             display: block;
+            background: var(--bg-primary);
         }
         
         .link-card::before {
@@ -399,7 +636,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), var(--accent-glow) 0%, transparent 60%);
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -409,19 +646,22 @@
         }
         
         .link-card:hover {
-            border-color: rgba(255, 255, 255, 0.3);
+            border-color: var(--text-secondary);
             transform: translateY(-5px);
         }
         
         .link-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-            transition: opacity 0.3s;
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+            transition: opacity 0.3s, transform 0.3s, filter 0.8s;
+            object-fit: contain;
         }
         
         .link-card:hover .link-icon {
             opacity: 1;
+            transform: scale(1.1);
         }
         
         .link-title {
@@ -433,7 +673,8 @@
         
         .link-desc {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.5);
+            color: var(--text-secondary);
+            transition: color 0.8s;
         }
         
         .link-arrow {
@@ -443,6 +684,7 @@
             transform: translateY(-50%) translateX(-10px);
             opacity: 0;
             transition: all 0.3s;
+            color: var(--text-primary);
         }
         
         .link-card:hover .link-arrow {
@@ -455,13 +697,14 @@
             position: absolute;
             inset: 0;
             border: 1px solid transparent;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) border-box;
+            background: linear-gradient(90deg, transparent, var(--text-secondary), transparent) border-box;
             -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
             mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
             opacity: 0;
             transition: opacity 0.3s;
+            background-size: 200% 100%;
         }
         
         .link-card:hover .animated-border {
@@ -478,13 +721,15 @@
         .footer {
             padding: 4rem 2rem;
             text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--border-color);
+            transition: border-color 0.8s;
         }
         
         .footer-text {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.4);
+            color: var(--text-secondary);
             letter-spacing: 0.2em;
+            transition: color 0.8s;
         }
         
         /* Scroll Indicator */
@@ -505,14 +750,16 @@
             font-size: 0.7rem;
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.4);
+            color: var(--text-secondary);
+            transition: color 0.8s;
         }
         
         .scroll-line {
             width: 1px;
             height: 60px;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), transparent);
+            background: linear-gradient(to bottom, var(--text-secondary), transparent);
             animation: scrollPulse 2s infinite;
+            transition: background 0.8s;
         }
         
         @keyframes scrollPulse {
@@ -528,8 +775,16 @@
             .cursor {
                 display: none;
             }
+            .theme-toggle {
+                right: 5rem;
+                top: 1.5rem;
+            }
             .section {
                 padding: 6rem 1.5rem;
+            }
+            .logo {
+                font-size: 1rem;
+                max-width: 150px;
             }
         }
         
@@ -543,12 +798,31 @@
     <!-- Grain Overlay -->
     <div class="grain"></div>
     
+    <!-- Stars (Night Mode Only) -->
+    <div class="stars-container" id="stars"></div>
+    
+    <!-- Day Elements (Light Mode Only) -->
+    <div class="day-elements">
+        <div class="sun"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
+    
     <!-- Custom Cursor -->
     <div class="cursor"></div>
     
+    <!-- Theme Toggle -->
+    <div class="theme-toggle magnetic" onclick="toggleTheme()">
+        <div class="toggle-slider">
+            <span class="toggle-icon moon-icon">🌙</span>
+            <span class="toggle-icon sun-icon">☀️</span>
+        </div>
+    </div>
+    
     <!-- Navigation -->
     <nav class="nav">
-        <div class="logo magnetic">FS.</div>
+        <div class="logo magnetic">科技用之于民</div>
         <div class="menu-trigger magnetic" onclick="toggleMenu()">
             <span></span>
             <span></span>
@@ -560,7 +834,7 @@
     <div class="fullscreen-menu" id="menu">
         <a href="#about" class="menu-item" onclick="toggleMenu()">关于</a>
         <a href="#links" class="menu-item" onclick="toggleMenu()">链接</a>
-        <a href="#contact" class="menu-item" onclick="toggleMenu()">联系</a>
+        <a href="#contact" class="menu-item" onclick="toggleMenu()">PERSON</a>
     </div>
     
     <!-- Hero Section -->
@@ -574,12 +848,14 @@
         
         <div class="title-container">
             <h1 class="main-title font-display" id="mainTitle">
-                <span class="char">首</span>
-                <span class="char">秀</span>
+                <span class="char">科</span>
+                <span class="char">技</span>
+                <span class="char">用</span>
                 <span class="char">之</span>
-                <span class="char">作</span>
+                <span class="char">于</span>
+                <span class="char">民</span>
             </h1>
-            <p class="subtitle">My First Creation</p>
+            <p class="subtitle">Technology for the People</p>
         </div>
         
         <div class="scroll-indicator">
@@ -602,12 +878,12 @@
     <section class="section links-section" id="links">
         <div class="content-wrapper">
             <h2 class="section-title font-display">链接</h2>
-            <p style="color: rgba(255,255,255,0.5); margin-bottom: 2rem;">探索更多内容</p>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem; transition: color 0.8s;">探索更多内容</p>
             
             <div class="links-grid">
                 <a href="https://space.bilibili.com" target="_blank" class="link-card magnetic">
                     <div class="animated-border"></div>
-                    <div class="link-icon">📺</div>
+                    <img src="https://kimi-web-img.moonshot.cn/img/raw.githubusercontent.com/25445537f2fa9f70b4e5b789750310f9f7adf81f.png" alt="Bilibili" class="link-icon" id="bilibiliIcon">
                     <div class="link-title">Bilibili</div>
                     <div class="link-desc">观看视频内容，分享创作灵感</div>
                     <div class="link-arrow">→</div>
@@ -615,7 +891,7 @@
                 
                 <a href="https://github.com" target="_blank" class="link-card magnetic">
                     <div class="animated-border"></div>
-                    <div class="link-icon">💻</div>
+                    <img src="https://kimi-web-img.moonshot.cn/img/toppng.com/a0efdbe1d095959928549db4c5dc62afa8657cd1.png" alt="GitHub" class="link-icon" id="githubIcon" style="filter: invert(1);">
                     <div class="link-title">GitHub</div>
                     <div class="link-desc">查看代码仓库，技术开源分享</div>
                     <div class="link-arrow">→</div>
@@ -626,10 +902,50 @@
     
     <!-- Contact/Footer Section -->
     <footer class="footer" id="contact">
-        <p class="footer-text">© 2026 FIRST SITE. CRAFTED WITH PASSION.</p>
+        <p class="footer-text">© 2026 科技用之于民. CRAFTED WITH PASSION.</p>
     </footer>
     
     <script>
+        // Generate Stars
+        function generateStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                
+                // Random size variation
+                const size = Math.random() * 2 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        generateStars();
+        
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const githubIcon = document.getElementById('githubIcon');
+            
+            if (html.getAttribute('data-theme') === 'light') {
+                html.removeAttribute('data-theme');
+                // Night mode - invert github icon to white
+                if (githubIcon) githubIcon.style.filter = 'invert(1)';
+            } else {
+                html.setAttribute('data-theme', 'light');
+                // Day mode - remove invert to show black github icon
+                if (githubIcon) githubIcon.style.filter = 'none';
+            }
+        }
+        
         // Custom Cursor
         const cursor = document.querySelector('.cursor');
         const magneticElements = document.querySelectorAll('.magnetic');
@@ -656,7 +972,7 @@
         });
         
         // Cursor hover states
-        const hoverElements = document.querySelectorAll('a, button, .menu-trigger, .link-card');
+        const hoverElements = document.querySelectorAll('a, button, .menu-trigger, .link-card, .theme-toggle');
         hoverElements.forEach(elem => {
             elem.addEventListener('mouseenter', () => cursor.classList.add('hover'));
             elem.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
