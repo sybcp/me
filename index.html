@@ -1,24 +1,26 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head> 
+<html lang="zh-CN" data-theme="dark">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>科技用之于民 | Tech for the People</title>
+    <title>让每个人都享受到科技的乐趣 | Tech for Everyone</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
+        /* 基础变量 - 夜间模式（默认） */
         :root {
-            --cursor-size: 20px;
-            --cursor-hover-size: 60px;
             --bg-primary: #0a0a0a;
             --bg-secondary: #111;
             --text-primary: #ffffff;
             --text-secondary: rgba(255, 255, 255, 0.6);
             --border-color: rgba(255, 255, 255, 0.1);
             --accent-glow: rgba(120, 119, 198, 0.15);
-            --star-color: rgba(255, 255, 255, 0.8);
+            --star-opacity: 1;
+            --day-opacity: 0;
+            --github-filter: invert(1);
         }
         
+        /* 白天模式变量 - 通过属性选择器覆盖 */
         [data-theme="light"] {
             --bg-primary: #f5f5f0;
             --bg-secondary: #ffffff;
@@ -26,13 +28,19 @@
             --text-secondary: rgba(0, 0, 0, 0.6);
             --border-color: rgba(0, 0, 0, 0.1);
             --accent-glow: rgba(255, 193, 7, 0.15);
-            --star-color: rgba(0, 0, 0, 0);
+            --star-opacity: 0;
+            --day-opacity: 1;
+            --github-filter: none;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+        
+        html {
+            transition: background-color 0.8s ease;
         }
         
         body {
@@ -42,6 +50,7 @@
             overflow-x: hidden;
             cursor: none;
             transition: background-color 0.8s ease, color 0.8s ease;
+            min-height: 100vh;
         }
         
         .font-display {
@@ -50,8 +59,8 @@
         
         /* Custom Cursor */
         .cursor {
-            width: var(--cursor-size);
-            height: var(--cursor-size);
+            width: 20px;
+            height: 20px;
             border: 1px solid var(--text-primary);
             border-radius: 50%;
             position: fixed;
@@ -62,8 +71,8 @@
         }
         
         .cursor.hover {
-            width: var(--cursor-hover-size);
-            height: var(--cursor-hover-size);
+            width: 60px;
+            height: 60px;
             background: rgba(128, 128, 128, 0.1);
         }
         
@@ -85,7 +94,7 @@
             opacity: 0.02;
         }
         
-        /* Stars */
+        /* Stars Container */
         .stars-container {
             position: fixed;
             top: 0;
@@ -94,22 +103,18 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
-            opacity: 1;
-            transition: opacity 0.8s;
-        }
-        
-        [data-theme="light"] .stars-container {
-            opacity: 0;
+            opacity: var(--star-opacity);
+            transition: opacity 0.8s ease;
         }
         
         .star {
             position: absolute;
             width: 2px;
             height: 2px;
-            background: var(--star-color);
+            background: white;
             border-radius: 50%;
             animation: twinkle 3s infinite ease-in-out;
-            box-shadow: 0 0 4px var(--star-color);
+            box-shadow: 0 0 4px white;
         }
         
         @keyframes twinkle {
@@ -117,7 +122,7 @@
             50% { opacity: 1; transform: scale(1.5); }
         }
         
-        /* Day Mode Elements - Sun & Clouds */
+        /* Day Elements Container */
         .day-elements {
             position: fixed;
             top: 0;
@@ -126,12 +131,8 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
-            opacity: 0;
-            transition: opacity 0.8s;
-        }
-        
-        [data-theme="light"] .day-elements {
-            opacity: 1;
+            opacity: var(--day-opacity);
+            transition: opacity 0.8s ease;
         }
         
         .sun {
@@ -147,24 +148,22 @@
         }
         
         @keyframes sunPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 165, 0, 0.3); }
-            50% { transform: scale(1.1); box-shadow: 0 0 80px rgba(255, 215, 0, 0.6), 0 0 120px rgba(255, 165, 0, 0.4); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         .cloud {
             position: absolute;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 100px;
-            opacity: 0.9;
             animation: float 20s infinite ease-in-out;
-            filter: blur(1px);
         }
         
         .cloud::before,
         .cloud::after {
             content: '';
             position: absolute;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 100px;
         }
         
@@ -173,7 +172,6 @@
             height: 40px;
             top: 20%;
             left: 10%;
-            animation-delay: 0s;
         }
         
         .cloud:nth-child(2)::before {
@@ -239,7 +237,7 @@
             position: fixed;
             top: 2rem;
             right: 6rem;
-            z-index: 100;
+            z-index: 1000;
             width: 60px;
             height: 32px;
             background: var(--border-color);
@@ -260,865 +258,4 @@
             background: var(--text-primary);
             border-radius: 50%;
             position: relative;
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.8s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-        
-        [data-theme="light"] .toggle-slider {
-            transform: translateX(28px);
-        }
-        
-        .toggle-icon {
-            position: absolute;
-            transition: opacity 0.3s;
-        }
-        
-        .moon-icon {
-            opacity: 1;
-        }
-        
-        .sun-icon {
-            opacity: 0;
-        }
-        
-        [data-theme="light"] .moon-icon {
-            opacity: 0;
-        }
-        
-        [data-theme="light"] .sun-icon {
-            opacity: 1;
-        }
-        
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-bg {
-            position: absolute;
-            width: 150%;
-            height: 150%;
-            background: radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 50%);
-            animation: pulse 8s ease-in-out infinite;
-            transition: background 0.8s;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-        
-        /* Interactive Title */
-        .title-container {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-        }
-        
-        .main-title {
-            font-size: clamp(2.5rem, 8vw, 6rem);
-            font-weight: 700;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .main-title .char {
-            display: inline-block;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            opacity: 0;
-            transform: translateY(100px) rotateX(90deg);
-            animation: revealChar 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        
-        @keyframes revealChar {
-            to {
-                opacity: 1;
-                transform: translateY(0) rotateX(0);
-            }
-        }
-        
-        .main-title:hover .char {
-            animation: wave 0.5s ease forwards;
-        }
-        
-        .main-title .char:nth-child(1) { animation-delay: 0.1s; }
-        .main-title .char:nth-child(2) { animation-delay: 0.15s; }
-        .main-title .char:nth-child(3) { animation-delay: 0.2s; }
-        .main-title .char:nth-child(4) { animation-delay: 0.25s; }
-        .main-title .char:nth-child(5) { animation-delay: 0.3s; }
-        .main-title .char:nth-child(6) { animation-delay: 0.35s; }
-        
-        @keyframes wave {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .subtitle {
-            font-size: 1rem;
-            font-weight: 300;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            margin-top: 2rem;
-            opacity: 0;
-            animation: fadeIn 1s ease 0.8s forwards;
-            color: var(--text-secondary);
-            transition: color 0.8s;
-        }
-        
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-        
-        /* Floating Elements */
-        .floating-shapes {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            pointer-events: none;
-        }
-        
-        .shape {
-            position: absolute;
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            animation: float 20s infinite ease-in-out;
-            transition: border-color 0.8s;
-        }
-        
-        .shape:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            left: -150px;
-            top: 20%;
-            animation-delay: 0s;
-        }
-        
-        .shape:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            right: -100px;
-            top: 60%;
-            animation-delay: -5s;
-        }
-        
-        .shape:nth-child(3) {
-            width: 150px;
-            height: 150px;
-            left: 50%;
-            bottom: -75px;
-            animation-delay: -10s;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(30px, -30px) rotate(120deg); }
-            66% { transform: translate(-20px, 20px) rotate(240deg); }
-        }
-        
-        /* Navigation */
-        .nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            mix-blend-mode: difference;
-        }
-        
-        .logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: -0.05em;
-            max-width: 200px;
-            line-height: 1.2;
-        }
-        
-        .menu-trigger {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        
-        .menu-trigger:hover {
-            transform: scale(1.1);
-        }
-        
-        .menu-trigger span {
-            width: 24px;
-            height: 1px;
-            background: var(--text-primary);
-            transition: all 0.3s, background 0.8s;
-        }
-        
-        .menu-trigger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-        
-        .menu-trigger.active span:nth-child(2) {
-            opacity: 0;
-        }
-        
-        .menu-trigger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(5px, -5px);
-        }
-        
-        /* Full Screen Menu */
-        .fullscreen-menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            z-index: 99;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease, background 0.8s;
-        }
-        
-        .fullscreen-menu.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .menu-item {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(2rem, 6vw, 4rem);
-            font-weight: 300;
-            margin: 1rem 0;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.8s;
-            cursor: pointer;
-            position: relative;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-        
-        .fullscreen-menu.active .menu-item {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .fullscreen-menu.active .menu-item:nth-child(1) { transition-delay: 0.1s; }
-        .fullscreen-menu.active .menu-item:nth-child(2) { transition-delay: 0.2s; }
-        .fullscreen-menu.active .menu-item:nth-child(3) { transition-delay: 0.3s; }
-        
-        .menu-item::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--text-primary);
-            transition: width 0.3s ease, background 0.8s;
-        }
-        
-        .menu-item:hover::after {
-            width: 100%;
-        }
-        
-        /* Content Sections */
-        .section {
-            min-height: 100vh;
-            padding: 10rem 2rem;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .content-wrapper {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-        }
-        
-        .section-title {
-            font-size: clamp(2rem, 5vw, 4rem);
-            font-weight: 300;
-            margin-bottom: 3rem;
-            position: relative;
-            display: inline-block;
-            color: var(--text-primary);
-            transition: color 0.8s;
-        }
-        
-        .section-title::before {
-            content: '';
-            position: absolute;
-            left: -2rem;
-            top: 50%;
-            width: 1rem;
-            height: 1px;
-            background: var(--text-secondary);
-            transition: background 0.8s;
-        }
-        
-        /* Interactive Text */
-        .interactive-text {
-            font-size: 1.5rem;
-            line-height: 2;
-            color: var(--text-secondary);
-            max-width: 800px;
-            transition: color 0.8s;
-        }
-        
-        .interactive-text .word {
-            display: inline-block;
-            transition: all 0.3s;
-            cursor: default;
-        }
-        
-        .interactive-text .word:hover {
-            color: var(--text-primary);
-            transform: scale(1.1);
-            text-shadow: 0 0 20px var(--accent-glow);
-        }
-        
-        /* Links Section */
-        .links-section {
-            background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
-            transition: background 0.8s;
-        }
-        
-        .links-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-        }
-        
-        .link-card {
-            border: 1px solid var(--border-color);
-            padding: 3rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.8s, background 0.8s;
-            text-decoration: none;
-            color: var(--text-primary);
-            display: block;
-            background: var(--bg-primary);
-        }
-        
-        .link-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), var(--accent-glow) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .link-card:hover::before {
-            opacity: 1;
-        }
-        
-        .link-card:hover {
-            border-color: var(--text-secondary);
-            transform: translateY(-5px);
-        }
-        
-        .link-icon {
-            width: 60px;
-            height: 60px;
-            margin-bottom: 1.5rem;
-            opacity: 0.8;
-            transition: opacity 0.3s, transform 0.3s, filter 0.8s;
-            object-fit: contain;
-        }
-        
-        .link-card:hover .link-icon {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-        
-        .link-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        
-        .link-desc {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            transition: color 0.8s;
-        }
-        
-        .link-arrow {
-            position: absolute;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%) translateX(-10px);
-            opacity: 0;
-            transition: all 0.3s;
-            color: var(--text-primary);
-        }
-        
-        .link-card:hover .link-arrow {
-            opacity: 1;
-            transform: translateY(-50%) translateX(0);
-        }
-        
-        /* Animated Border */
-        .animated-border {
-            position: absolute;
-            inset: 0;
-            border: 1px solid transparent;
-            background: linear-gradient(90deg, transparent, var(--text-secondary), transparent) border-box;
-            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.3s;
-            background-size: 200% 100%;
-        }
-        
-        .link-card:hover .animated-border {
-            opacity: 1;
-            animation: borderRotate 3s linear infinite;
-        }
-        
-        @keyframes borderRotate {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-        
-        /* Footer */
-        .footer {
-            padding: 4rem 2rem;
-            text-align: center;
-            border-top: 1px solid var(--border-color);
-            transition: border-color 0.8s;
-        }
-        
-        .footer-text {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            letter-spacing: 0.2em;
-            transition: color 0.8s;
-        }
-        
-        /* Scroll Indicator */
-        .scroll-indicator {
-            position: absolute;
-            bottom: 3rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            opacity: 0;
-            animation: fadeIn 1s ease 1.5s forwards;
-        }
-        
-        .scroll-text {
-            font-size: 0.7rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            transition: color 0.8s;
-        }
-        
-        .scroll-line {
-            width: 1px;
-            height: 60px;
-            background: linear-gradient(to bottom, var(--text-secondary), transparent);
-            animation: scrollPulse 2s infinite;
-            transition: background 0.8s;
-        }
-        
-        @keyframes scrollPulse {
-            0%, 100% { transform: scaleY(1); opacity: 1; }
-            50% { transform: scaleY(0.5); opacity: 0.5; }
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            body {
-                cursor: auto;
-            }
-            .cursor {
-                display: none;
-            }
-            .theme-toggle {
-                right: 5rem;
-                top: 1.5rem;
-            }
-            .section {
-                padding: 6rem 1.5rem;
-            }
-            .logo {
-                font-size: 1rem;
-                max-width: 150px;
-            }
-        }
-        
-        /* Magnetic Effect */
-        .magnetic {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-    </style>
-</head>
-<body>
-    <!-- Grain Overlay -->
-    <div class="grain"></div>
-    
-    <!-- Stars (Night Mode Only) -->
-    <div class="stars-container" id="stars"></div>
-    
-    <!-- Day Elements (Light Mode Only) -->
-    <div class="day-elements">
-        <div class="sun"></div>
-        <div class="cloud"></div>
-        <div class="cloud"></div>
-        <div class="cloud"></div>
-    </div>
-    
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
-    
-    <!-- Theme Toggle -->
-    <div class="theme-toggle magnetic" onclick="toggleTheme()">
-        <div class="toggle-slider">
-            <span class="toggle-icon moon-icon">🌙</span>
-            <span class="toggle-icon sun-icon">☀️</span>
-        </div>
-    </div>
-    
-    <!-- Navigation -->
-    <nav class="nav">
-        <div class="logo magnetic">科技用之于民</div>
-        <div class="menu-trigger magnetic" onclick="toggleMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </nav>
-    
-    <!-- Fullscreen Menu -->
-    <div class="fullscreen-menu" id="menu">
-        <a href="#about" class="menu-item" onclick="toggleMenu()">关于</a>
-        <a href="#links" class="menu-item" onclick="toggleMenu()">链接</a>
-        <a href="#contact" class="menu-item" onclick="toggleMenu()">PERSON</a>
-    </div>
-    
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-bg"></div>
-        <div class="floating-shapes">
-            <div class="shape"></div>
-            <div class="shape"></div>
-            <div class="shape"></div>
-        </div>
-        
-        <div class="title-container">
-            <h1 class="main-title font-display" id="mainTitle">
-                <span class="char">科</span>
-                <span class="char">技</span>
-                <span class="char">用</span>
-                <span class="char">之</span>
-                <span class="char">于</span>
-                <span class="char">民</span>
-            </h1>
-            <p class="subtitle">Technology for the People</p>
-        </div>
-        
-        <div class="scroll-indicator">
-            <span class="scroll-text">Scroll</span>
-            <div class="scroll-line"></div>
-        </div>
-    </section>
-    
-    <!-- About Section -->
-    <section class="section" id="about">
-        <div class="content-wrapper">
-            <h2 class="section-title font-display">关于</h2>
-            <p class="interactive-text" id="aboutText">
-                这是我搭建的第一个网站，代表着我对前端开发的热爱与探索的开始。
-            </p>
-        </div>
-    </section>
-    
-    <!-- Links Section -->
-    <section class="section links-section" id="links">
-        <div class="content-wrapper">
-            <h2 class="section-title font-display">链接</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 2rem; transition: color 0.8s;">探索更多内容</p>
-            
-            <div class="links-grid">
-                <a href="https://space.bilibili.com" target="_blank" class="link-card magnetic">
-                    <div class="animated-border"></div>
-                    <img src="https://kimi-web-img.moonshot.cn/img/raw.githubusercontent.com/25445537f2fa9f70b4e5b789750310f9f7adf81f.png" alt="Bilibili" class="link-icon" id="bilibiliIcon">
-                    <div class="link-title">Bilibili</div>
-                    <div class="link-desc">观看视频内容，分享创作灵感</div>
-                    <div class="link-arrow">→</div>
-                </a>
-                
-                <a href="https://github.com" target="_blank" class="link-card magnetic">
-                    <div class="animated-border"></div>
-                    <img src="https://kimi-web-img.moonshot.cn/img/toppng.com/a0efdbe1d095959928549db4c5dc62afa8657cd1.png" alt="GitHub" class="link-icon" id="githubIcon" style="filter: invert(1);">
-                    <div class="link-title">GitHub</div>
-                    <div class="link-desc">查看代码仓库，技术开源分享</div>
-                    <div class="link-arrow">→</div>
-                </a>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Contact/Footer Section -->
-    <footer class="footer" id="contact">
-        <p class="footer-text">© 2026 科技用之于民. CRAFTED WITH PASSION.</p>
-    </footer>
-    <script>
-// 1. 主题初始化：优先使用 localStorage，否则跟随系统
-(function() {
-    const html = document.documentElement;
-    const githubIcon = document.getElementById('githubIcon');
-    function applyTheme(theme) {
-        if (theme === "light") {
-            html.setAttribute("data-theme", "light");
-            if(githubIcon) githubIcon.style.filter = "none";
-        } else {
-            html.removeAttribute("data-theme");
-            if(githubIcon) githubIcon.style.filter = "invert(1)";
-        }
-    }
-    let theme = localStorage.getItem('theme');
-    if (!theme) {
-        // 跟随操作系统主题
-        theme = window.matchMedia('(prefers-color-scheme: light)').matches ? "light" : "dark";
-    }
-    applyTheme(theme);
-    // 响应系统主题切换（如果没有本地选择时）
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
-        if (!localStorage.getItem('theme')) {
-            applyTheme(e.matches ? "light" : "dark");
-        }
-    });
-})();
-
-// 2. 切换主题并保存
-function toggleTheme() {
-    const html = document.documentElement;
-    let theme;
-    if (html.getAttribute('data-theme') === 'light') {
-        html.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'dark');
-        const githubIcon = document.getElementById('githubIcon');
-        if (githubIcon) githubIcon.style.filter = 'invert(1)';
-    } else {
-        html.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-        const githubIcon = document.getElementById('githubIcon');
-        if (githubIcon) githubIcon.style.filter = 'none';
-    }
-}
-</script>
-    <script>
-        // Generate Stars
-        function generateStars() {
-            const starsContainer = document.getElementById('stars');
-            const starCount = 100;
-            
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                
-                // Random size variation
-                const size = Math.random() * 2 + 1;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                
-                starsContainer.appendChild(star);
-            }
-        }
-        
-        generateStars();
-        
-        // Theme Toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const githubIcon = document.getElementById('githubIcon');
-            
-            if (html.getAttribute('data-theme') === 'light') {
-                html.removeAttribute('data-theme');
-                // Night mode - invert github icon to white
-                if (githubIcon) githubIcon.style.filter = 'invert(1)';
-            } else {
-                html.setAttribute('data-theme', 'light');
-                // Day mode - remove invert to show black github icon
-                if (githubIcon) githubIcon.style.filter = 'none';
-            }
-        }
-        
-        // Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        const magneticElements = document.querySelectorAll('.magnetic');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX - 10 + 'px';
-            cursor.style.top = e.clientY - 10 + 'px';
-            
-            // Magnetic effect
-            magneticElements.forEach(elem => {
-                const rect = elem.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                const distance = Math.sqrt(x * x + y * y);
-                
-                if (distance < 100) {
-                    const magnetX = x * 0.3;
-                    const magnetY = y * 0.3;
-                    elem.style.transform = `translate(${magnetX}px, ${magnetY}px)`;
-                } else {
-                    elem.style.transform = 'translate(0, 0)';
-                }
-            });
-        });
-        
-        // Cursor hover states
-        const hoverElements = document.querySelectorAll('a, button, .menu-trigger, .link-card, .theme-toggle');
-        hoverElements.forEach(elem => {
-            elem.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            elem.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-        
-        // Menu Toggle
-        function toggleMenu() {
-            const menu = document.getElementById('menu');
-            const trigger = document.querySelector('.menu-trigger');
-            menu.classList.toggle('active');
-            trigger.classList.toggle('active');
-        }
-        
-        // Interactive Text - Word Split
-        const aboutText = document.getElementById('aboutText');
-        const text = aboutText.textContent;
-        aboutText.innerHTML = text.split('').map(char => {
-            if (char === ' ') return ' ';
-            return `<span class="word">${char}</span>`;
-        }).join('');
-        
-        // Link Card Spotlight Effect
-        const linkCards = document.querySelectorAll('.link-card');
-        linkCards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                card.style.setProperty('--x', x + '%');
-                card.style.setProperty('--y', y + '%');
-            });
-        });
-        
-        // Parallax on Scroll
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const scrolled = window.pageYOffset;
-                    const parallax = document.querySelector('.hero-bg');
-                    parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
-                    
-                    const shapes = document.querySelectorAll('.shape');
-                    shapes.forEach((shape, index) => {
-                        const speed = (index + 1) * 0.2;
-                        shape.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.1}deg)`;
-                    });
-                    
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        });
-        
-        // Reveal on Scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-        
-        document.querySelectorAll('.section-title, .interactive-text').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            observer.observe(el);
-        });
-        
-        // Smooth Scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-        
-        // Title Wave Animation on Hover
-        const titleChars = document.querySelectorAll('.main-title .char');
-        document.getElementById('mainTitle').addEventListener('mouseenter', () => {
-            titleChars.forEach((char, index) => {
-                setTimeout(() => {
-                    char.style.animation = 'none';
-                    char.offsetHeight; // Trigger reflow
-                    char.style.animation = 'wave 0.5s ease';
-                }, index * 50);
-            });
-        });
-    </script>
-</body>
-</html>
- 
+            transition: transform 0
